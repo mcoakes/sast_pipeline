@@ -30,11 +30,11 @@ jobs:
       - name: Display Bandit Report
         run: cat bandit-report.json
 
-      - name: Fail on High-Severity Issues
+      - name: Fail on Medium and High-Severity Issues
         run: |
-          HIGH_ISSUES=$(jq '[.results[] | select(.issue_severity=="High")] | length' bandit-report.json)
-          if [ "$HIGH_ISSUES" -gt 0 ]; then
-            echo "High-severity issues found: $HIGH_ISSUES"
+          ISSUES=$(jq '[.results[] | select(.issue_severity=="High" or .issue_severity=="Medium")] | length' bandit-report.json)
+          if [ "$ISSUES" -gt 0 ]; then
+            echo "Medium or High-severity issues found: $ISSUES"
             exit 1
           fi
 
