@@ -43,3 +43,21 @@ jobs:
         with:
           name: bandit-report
           path: bandit-report.json
+
+      - name: Set Check Status
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const conclusion = '${{ steps.bandit_scan.outcome }}' === 'success' ? 'success' : 'failure';
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Bandit SAST Security Scan',
+              head_sha: context.sha,
+              status: 'completed',
+              conclusion,
+              output: {
+                title: conclusion === 'success' ? 'No issues found' : 'Vulnerabilities detected',
+                summary: 'The Bandit security scan has completed.'
+              }
+            });
