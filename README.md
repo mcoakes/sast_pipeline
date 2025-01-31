@@ -14,3 +14,5 @@ Enable "Require a pull request before merging."
 Enable "Require status checks to pass before merging."
 Select the Bandit workflow under "Status checks that are required."
 Optionally, enable "Require approvals" if you want review enforcement.
+
+
