@@ -1,4 +1,4 @@
-name: Python SAST Security Scan with Bandit
+name: Bandit SAST Security Scan
 
 on:
   push:
