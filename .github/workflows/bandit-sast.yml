@@ -31,6 +31,15 @@ jobs:
       - name: Run Bandit Security Scan
         run: bandit -r . -f json -o bandit-report.json || true
 
+      - name: Display Report in Logs
+        run: cat bandit-report.json
+
+      - name: Upload Bandit Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: bandit-report
+          path: bandit-report.json
+
       - name: Fail on Medium and High-Severity Issues
         run: |
           ISSUES=$(jq '[.results[] | select(.issue_severity=="High" or .issue_severity=="Medium")] | length' bandit-report.json)
