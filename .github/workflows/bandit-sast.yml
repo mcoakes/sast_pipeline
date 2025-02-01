@@ -42,7 +42,7 @@ jobs:
 
       - name: Fail on Medium and High-Severity Issues
         run: |
-          ISSUES=$(jq '[.results[] | select(.issue_severity=="High" or .issue_severity=="Medium")] | length' bandit-report.json)
+          ISSUES=$(jq '[.results[] | select(.issue_severity=="HIGH" or .issue_severity=="MEDIUM")] | length' bandit-report.json)
           if [ "$ISSUES" -gt 0 ]; then
             echo "❌ Medium or High-severity issues found: $ISSUES"
             exit 1  # Fails the job and reports failure to GitHub
