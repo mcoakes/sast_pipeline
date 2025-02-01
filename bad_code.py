@@ -1,4 +1,4 @@
-# Bad code
+# Bad code # 
 import sqlite3
 
 def find_user(username):
