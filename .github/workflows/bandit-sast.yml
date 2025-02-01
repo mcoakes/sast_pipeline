@@ -1,15 +1,19 @@
 name: Bandit SAST Security Scan
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
 
 jobs:
   bandit_scan:
+    name: Bandit SAST Security Scan
     runs-on: ubuntu-latest
 
     steps:
@@ -27,38 +31,11 @@ jobs:
       - name: Run Bandit Security Scan
         run: bandit -r . -f json -o bandit-report.json
 
-      - name: Display Bandit Report
-        run: cat bandit-report.json
-
       - name: Fail on Medium and High-Severity Issues
-        id: check_issues
         run: |
           ISSUES=$(jq '[.results[] | select(.issue_severity=="High" or .issue_severity=="Medium")] | length' bandit-report.json)
           if [ "$ISSUES" -gt 0 ]; then
-            echo "Medium or High-severity issues found: $ISSUES"
-            exit 1
+            echo "❌ Medium or High-severity issues found: $ISSUES"
+            exit 1  # Fails the job and reports failure to GitHub
           fi
-
-      - name: Upload Bandit Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: bandit-report
-          path: bandit-report.json
-
-      - name: Set Check Status
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const conclusion = '${{ steps.check_issues.outcome }}' === 'success' ? 'success' : 'failure';
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'Bandit SAST Security Scan',
-              head_sha: context.sha,
-              status: 'completed',
-              conclusion,
-              output: {
-                title: conclusion === 'success' ? 'No issues found' : 'Vulnerabilities detected',
-                summary: 'The Bandit security scan has completed.'
-              }
-            });
+          echo "✅ No issues detected."
